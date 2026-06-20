@@ -1,0 +1,1150 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fasih | Visual Artist | Video Editor &amp; Content Specialist</title>
+<meta name="description" content="Fasih is a video editor and social media content specialist crafting stories and video flows that boost retention and connect with audiences.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F1FF;
+    --paper-2: #ECE3FB;
+    --ink: #18141F;
+    --coral: #FF5A4E;
+    --yellow: #FFD639;
+    --mint: #3FE0B0;
+    --violet: #6C4DFF;
+
+    --font-display: 'Anton', sans-serif;
+    --font-body: 'Space Grotesk', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  :focus-visible {
+    outline: 3px solid var(--violet);
+    outline-offset: 3px;
+  }
+
+  /* ================= TIMELINE NAV ================= */
+  .timeline {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 20px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .timeline-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .timecode {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    min-width: 88px;
+  }
+
+  .track {
+    position: relative;
+    flex: 1;
+    display: flex;
+    height: 36px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .segment {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: var(--paper);
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .segment:hover,
+  .segment:focus-visible { opacity: 1; }
+
+  .segment[data-color="coral"]  { background: rgba(255, 90, 78, 0.18); }
+  .segment[data-color="yellow"] { background: rgba(255, 214, 57, 0.16); }
+  .segment[data-color="mint"]   { background: rgba(63, 224, 176, 0.16); }
+  .segment[data-color="violet"] { background: rgba(108, 77, 255, 0.25); }
+
+  .playhead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--yellow);
+    left: 0;
+    box-shadow: 0 0 10px var(--yellow);
+    z-index: 2;
+  }
+
+  /* ================= LAYOUT HELPERS ================= */
+  .section { padding: 100px 24px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  .display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .tag-coral  { background: var(--coral); }
+  .tag-yellow { background: var(--yellow); }
+  .tag-mint   { background: var(--mint); }
+  .tag-violet { background: var(--violet); color: var(--paper); }
+
+  .section-title {
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    margin-bottom: 28px;
+  }
+
+  .section-intro {
+    font-size: 1.1rem;
+    max-width: 620px;
+    margin-bottom: 40px;
+    opacity: 0.8;
+  }
+
+  /* Corner brackets — viewfinder motif, reused in hero + about */
+  .corner { position: absolute; width: 26px; height: 26px; pointer-events: none; }
+  .corner.tl { top: -2px; left: -2px; border-top: 4px solid var(--coral); border-left: 4px solid var(--coral); }
+  .corner.tr { top: -2px; right: -2px; border-top: 4px solid var(--yellow); border-right: 4px solid var(--yellow); }
+  .corner.bl { bottom: -2px; left: -2px; border-bottom: 4px solid var(--mint); border-left: 4px solid var(--mint); }
+  .corner.br { bottom: -2px; right: -2px; border-bottom: 4px solid var(--violet); border-right: 4px solid var(--violet); }
+
+  /* Buttons */
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    padding: 16px 30px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px solid currentColor;
+    transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-primary {
+    background: var(--coral);
+    color: var(--ink);
+    border-color: var(--coral);
+  }
+  .btn-primary:hover { transform: translateY(-3px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn-ghost:hover {
+    background: var(--ink);
+    color: var(--paper);
+    transform: translateY(-3px);
+  }
+
+  /* ================= HERO ================= */
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    padding: 56px 24px;
+    background-image: repeating-linear-gradient(
+      to right,
+      rgba(24, 20, 31, 0.045) 0px,
+      rgba(24, 20, 31, 0.045) 1px,
+      transparent 1px,
+      transparent 44px
+    );
+  }
+
+  .hero-frame {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 56px;
+    border: 2px solid var(--ink);
+  }
+
+  .rec-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 8px 16px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    margin-bottom: 36px;
+  }
+
+  .rec-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--coral);
+    animation: pulse 1.6s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 {
+    font-size: clamp(4rem, 15vw, 11.5rem);
+  }
+
+  .hero .role {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    color: var(--violet);
+    margin-top: 4px;
+    margin-bottom: 24px;
+  }
+
+  .tagline {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    max-width: 600px;
+    margin-bottom: 40px;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.6;
+  }
+
+  .arrow { animation: bob 1.6s infinite; }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* ================= ABOUT ================= */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 48px;
+    align-items: start;
+    margin-bottom: 40px;
+  }
+
+  .viewfinder {
+    position: relative;
+    padding: 36px;
+    border: 2px solid var(--ink);
+  }
+
+  .viewfinder p { margin-bottom: 18px; font-size: 1.05rem; }
+  .viewfinder p:last-child { margin-bottom: 0; }
+
+  .pull-quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    text-transform: uppercase;
+    line-height: 1.18;
+    background: var(--coral);
+    color: var(--ink);
+    padding: 36px;
+    border-radius: 6px;
+    align-self: start;
+  }
+
+  .about-cta {
+    font-size: 1.2rem;
+    font-weight: 500;
+    max-width: 680px;
+  }
+
+  /* ================= WORK ================= */
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 44px;
+  }
+
+  .filter {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 10px 20px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .filter.active,
+  .filter:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
+  .clip-card {
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--paper);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+
+  .clip-card:hover {
+    transform: translateY(-6px) rotate(-1deg);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .clip-card.no-video {
+    cursor: default;
+  }
+  .clip-card.no-video:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .clip-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--coral), var(--violet));
+  }
+
+  .clip-card[data-category="cinematic"]   .clip-thumb { background: linear-gradient(135deg, var(--violet), var(--ink)); }
+  .clip-card[data-category="reels"]       .clip-thumb { background: linear-gradient(135deg, var(--coral), var(--violet)); }
+  .clip-card[data-category="speedramp"]   .clip-thumb { background: linear-gradient(135deg, var(--yellow), var(--coral)); }
+  .clip-card[data-category="talkinghead"] .clip-thumb { background: linear-gradient(135deg, var(--mint), var(--yellow)); }
+
+  .play-icon {
+    font-size: 2.4rem;
+    color: var(--paper);
+    opacity: 0.9;
+    transition: transform 0.2s ease;
+  }
+
+  .clip-card:not(.no-video):hover .play-icon {
+    transform: scale(1.18);
+  }
+
+  .clip-duration {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+
+  .clip-body { padding: 22px; }
+
+  .clip-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.6;
+  }
+
+  .clip-body h3 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1.35rem;
+    margin: 10px 0 8px;
+  }
+
+  .clip-body p {
+    font-size: 0.95rem;
+    opacity: 0.8;
+  }
+
+  /* ================= TOOLKIT ================= */
+  .toolkit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .tool-card {
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 36px;
+    border-top: 6px solid var(--ink);
+  }
+
+  .tool-card:nth-child(1) { border-top-color: var(--coral); }
+  .tool-card:nth-child(2) { border-top-color: var(--mint); }
+  .tool-card:nth-child(3) { border-top-color: var(--violet); }
+
+  .tool-step {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 18px;
+    letter-spacing: 0.1em;
+  }
+
+  .tool-card h3 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1.7rem;
+    margin-bottom: 10px;
+  }
+
+  .tool-card p { opacity: 0.8; }
+
+  /* ================= CONTACT ================= */
+  .section-contact {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .section-contact .tag-violet { background: var(--violet); }
+
+  .contact-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 36px 0 56px;
+  }
+
+  .section-contact .btn-ghost {
+    color: var(--paper);
+    border-color: var(--paper);
+  }
+  .section-contact .btn-ghost:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .copyright {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    opacity: 0.55;
+  }
+
+  /* ================= VIDEO MODAL ================= */
+  .video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .video-modal.open { display: flex; }
+
+  .video-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(24, 20, 31, 0.85);
+  }
+
+  .video-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    z-index: 1;
+  }
+
+  .video-modal-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid var(--paper);
+  }
+
+  .video-modal-frame.vertical {
+    max-width: 420px;
+    aspect-ratio: 9 / 16;
+    margin: 0 auto;
+  }
+
+  .video-modal-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Instagram embeds size themselves and include a caption,
+     so the frame switches to an auto-height scrollable card */
+  .video-modal-frame.instagram {
+    aspect-ratio: auto;
+    max-width: 540px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: var(--paper);
+    margin: 0 auto;
+  }
+
+  .video-modal-frame.instagram iframe { display: none; }
+
+  .video-modal-instagram {
+    display: none;
+    width: 100%;
+    min-height: 200px;
+  }
+
+  .video-modal-frame.instagram .video-modal-instagram { display: block; }
+
+  .video-modal-close {
+    position: absolute;
+    top: -52px;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .video-modal-close:hover { transform: rotate(90deg); }
+
+  /* ================= RESPONSIVE ================= */
+  @media (max-width: 880px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .toolkit-grid { grid-template-columns: 1fr; }
+    .hero-frame { padding: 36px 28px; }
+    .section { padding: 80px 20px; }
+  }
+
+  @media (max-width: 680px) {
+    .segment span { display: none; }
+    .timecode { font-size: 0.7rem; min-width: auto; }
+    .track { height: 28px; }
+    .hero-frame { padding: 28px 20px; }
+    .scroll-cue { display: none; }
+    .video-modal-close { top: -44px; }
+  }
+
+  /* ================= REDUCED MOTION ================= */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rec-dot, .arrow { animation: none; }
+    .clip-card, .btn, .playhead, .video-modal-close { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ TIMELINE / NAV ============ -->
+  <nav class="timeline" aria-label="Page progress navigation">
+    <div class="timeline-inner">
+      <span class="timecode" id="timecode" aria-hidden="true">00:00:00:00</span>
+      <div class="track" id="track">
+        <div class="playhead" id="playhead"></div>
+        <a href="#about" class="segment" data-color="coral"><span>About</span></a>
+        <a href="#work" class="segment" data-color="yellow"><span>Work</span></a>
+        <a href="#toolkit" class="segment" data-color="mint"><span>Toolkit</span></a>
+        <a href="#contact" class="segment" data-color="violet"><span>Contact</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero" id="hero">
+    <div class="hero-frame">
+      <span class="corner tl" aria-hidden="true"></span>
+      <span class="corner tr" aria-hidden="true"></span>
+      <span class="corner bl" aria-hidden="true"></span>
+      <span class="corner br" aria-hidden="true"></span>
+
+      <div class="rec-badge">
+        <span class="rec-dot" aria-hidden="true"></span>
+        REC <span id="hero-timecode">00:00:00:00</span>
+      </div>
+
+      <p class="eyebrow">Video Editor &amp; Social Media Content Specialist</p>
+      <h1 class="display">Fasih</h1>
+      <p class="role">Visual Artist</p>
+      <p class="tagline">I edit stories that hold attention - frame by frame, cut by cut, message intact.</p>
+
+      <div class="cta-row">
+        <a href="#work" class="btn btn-primary">▶ Watch the Work</a>
+        <a href="#contact" class="btn btn-ghost">Let's Talk</a>
+      </div>
+
+      <div class="scroll-cue">
+        Scroll
+        <span class="arrow" aria-hidden="true">↓</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about" class="section section-about">
+    <div class="container">
+      <p class="section-label"><span class="tag tag-coral">00 / 01</span> About</p>
+      <h2 class="display section-title">Hi, I'm Fasih.</h2>
+
+      <div class="about-grid">
+        <div class="viewfinder">
+          <span class="corner tl" aria-hidden="true"></span>
+          <span class="corner tr" aria-hidden="true"></span>
+          <span class="corner bl" aria-hidden="true"></span>
+          <span class="corner br" aria-hidden="true"></span>
+          <p>Hey there! I'm a video editor and social media content specialist. For around a year now, I've been working with content creators to cut, pace, and polish videos that actually perform.</p>
+          <p>I craft stories and video flows that boost retention and, most importantly, deliver your message in a way that truly connects with your audience.</p>
+        </div>
+
+        <blockquote class="pull-quote">
+          Video editing isn't just about adding effects, it's about telling a story.
+        </blockquote>
+      </div>
+
+      <p class="about-cta">So if you want an edit that actually matters and not just flashy effects, then message now and lets get started. Looking forward to it!</p>
+    </div>
+  </section>
+
+  <!-- ============ WORK ============ -->
+  <!--
+    PROJECTS — placeholder content
+    ------------------------------------------------------------
+    Replace the cards below with your real projects once ready.
+    Clicking a card opens the video in a popup player — visitors
+    never leave the site.
+
+    For each card:
+      - Update data-category to one of: cinematic | reels | speedramp | talkinghead
+        (or add new categories — just add a matching filter button above
+        and a new .clip-card[data-category="..."] gradient rule in the CSS)
+      - Set data-video to an EMBED url:
+          Google Drive: https://drive.google.com/file/d/FILE_ID/preview
+            (from a share link like .../d/FILE_ID/view, swap "view" for "preview")
+          YouTube:       https://www.youtube.com/embed/VIDEO_ID
+          Vimeo:         https://player.vimeo.com/video/VIDEO_ID
+          Instagram:     the post/reel URL itself, e.g. https://www.instagram.com/reel/XXXXXXXX/
+                          — also add data-embed="instagram" on the card
+      - Set data-orientation to "vertical" for 9:16 clips (Reels / Speed Ramp)
+        or "horizontal" (default) for 16:9 clips (Cinematic / Talking Head)
+        (ignored for Instagram embeds, which size themselves)
+      - Leave data-video="" to keep a card as a non-clickable placeholder
+      - Swap the .clip-thumb content with a real thumbnail image,
+        e.g. <img src="thumbnail.jpg" alt="Project title">
+      - Update .clip-duration, the clip-tag, title and description
+  -->
+  <section id="work" class="section section-work">
+    <div class="container">
+      <p class="section-label"><span class="tag tag-yellow">00 / 02</span> The Work</p>
+      <h2 class="display section-title">Selected Cuts</h2>
+      <p class="section-intro">A mix of edits across formats. This section is set up with placeholder projects — swap them out for your own once you've picked your favorites.</p>
+
+      <div class="filter-row" role="group" aria-label="Filter projects by category">
+        <button class="filter active" data-filter="all">All</button>
+        <button class="filter" data-filter="cinematic">Cinematic &amp; Films</button>
+        <button class="filter" data-filter="reels">Reels</button>
+        <button class="filter" data-filter="speedramp">Speed Ramp Edits</button>
+        <button class="filter" data-filter="talkinghead">Talking Head</button>
+      </div>
+
+      <div class="work-grid" id="work-grid">
+
+        <article class="clip-card" data-category="cinematic" data-video="https://drive.google.com/file/d/1ifGU1LqGObpFNYQLFvMSVu-LnXz4DpB_/preview" data-orientation="horizontal">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">01:00</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Cinematic &amp; Films</span>
+            <h3>Peasant &amp; Knight Film</h3>
+            <p>A narrative short edited in Premiere Pro, with the color grade finished in DaVinci Resolve and sound design completed in Premiere Pro.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="cinematic" data-video="https://drive.google.com/file/d/11DcM2BgHse2HFjKCNbGt6uAVxqJLxsuW/preview" data-orientation="horizontal">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:52</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Cinematic &amp; Films</span>
+            <h3>M5 Cinematics</h3>
+            <p>An in-game recording cut into a cinematic edit with Premiere Pro, color graded in DaVinci Resolve, with pacing and sound design handled start to finish.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="cinematic" data-video="https://drive.google.com/file/d/1JYKk7unmryCxIyzvJy6D8cFeMqwXyHfI/preview" data-orientation="horizontal">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:15</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Cinematic &amp; Films</span>
+            <h3>500 Days of Summer — Elevator Scene (Parody)</h3>
+            <p>A shot-for-shot recreation of the elevator scene from 500 Days of Summer, filmed and edited in Adobe Premiere Pro.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="cinematic" data-video="https://drive.google.com/file/d/1Ta08AvVlc2GWy0NcwuLvD5Fp94S38YaG/preview" data-orientation="horizontal">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:43</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Cinematic &amp; Films</span>
+            <h3>ORDMUN Film</h3>
+            <p>An event highlight film for ORDMUN '26, filmed and edited to capture the energy of the conference.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="reels" data-video="https://drive.google.com/file/d/1Uiffj6UGC3lBulgsNEkTP_NrZiKVIDA1/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:33</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Reels</span>
+            <h3>Design Showcase Reel</h3>
+            <p>Design showcase video edited for SaadArtBiz.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="reels" data-video="https://drive.google.com/file/d/14j41rULttoAwb_2WJA7ku4kX-HAZZ4Mk/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:32</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Reels</span>
+            <h3>Design Critisicm Reel</h3>
+            <p>Design showcase video edited for SaadArtBiz.</p>
+          </div>
+        </article>
+
+                <article class="clip-card" data-category="reels" data-video="https://drive.google.com/file/d/1VGvpvNT22sZR1PCLSwmNv80fcDLJW91r/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:25</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Reels</span>
+            <h3>Society Launch Reel</h3>
+            <p>The following video was made for a launch of a housing society, all the transitions, sound design and animation were done by me in Adobe Premiere Pro.</p>
+          </div>
+        </article>
+
+                        <article class="clip-card" data-category="reels" data-video="https://drive.google.com/file/d/1kBsMDRFLlJcSRc_BTxaua5kzfjyr6d32/preview" data-orientation="horizontal">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:25</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Reels</span>
+            <h3>Venue Reveal Video</h3>
+            <p>The following video was edited and color graded by me for a Venue Reveal for an event.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="speedramp" data-video="https://drive.google.com/file/d/1goqG1EcdF6A9sFy83nfPxGEXXwF3z8O0/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+             <span class="clip-duration">00:28</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Speed Ramp Edits</span>
+            <h3>GT86 Speed Ramp Edit</h3>
+            <p>The video was speed ramped in After Effects as well as the vfx. The color grade was done in Davinci Resolve.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="speedramp" data-video="https://drive.google.com/file/d/1gJZPR1zBo9A3ZtpIrQvOg4xNu_lmwfZE/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+            <span class="clip-duration">00:35</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Speed Ramp Edits</span>
+            <h3>BMW M3 Speed Ramp</h3>
+            <p>The video was speed ramped in After Effects as well as the vfx. The color grade was done in Davinci Resolve.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="talkinghead" data-video="https://drive.google.com/file/d/1zA9DAeaUSvIUHdkrNw3z9Qf0BXVaJxwx/preview" data-orientation="horizontal">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+            <span class="clip-duration">01:04</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Talking Head</span>
+            <h3>IKIGAI Talking Head video</h3>
+            <p>In the following video, the color grade was done in Davinci Resolve (Converted from S-log 2 to Rec 709) and the pacing was done in Premiere Pro. The motion graphics were done in After Effects.</p>
+          </div>
+        </article>
+
+        <article class="clip-card" data-category="talkinghead" data-video="https://drive.google.com/file/d/131IlnlV-WatEUWsHLUR9WQeCjQrJF6-Q/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+            <span class="clip-duration">00:46</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Talking Head</span>
+            <h3>Design Thinking Talking Head</h3>
+            <p>In the following video, the color correction and the pacing were done in Premiere Pro. The motion graphics and captions were done in After Effects.</p>
+          </div>
+        </article>
+
+         <article class="clip-card" data-category="talkinghead" data-video="https://drive.google.com/file/d/1zi-QB-n2y4AyMRz-LWRYa1gLIOMDGKfI/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+            <span class="clip-duration">00:40</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Talking Head</span>
+            <h3>Micro Board Talking Head video</h3>
+            <p>In the following video, the color correction and the pacing were done in Premiere Pro. The motion graphics, camera movement and captions were done in After Effects.</p>
+          </div>
+        </article>
+
+         <article class="clip-card" data-category="talkinghead" data-video="https://drive.google.com/file/d/1iBx3BsnWOa3Di0QjuIM1kvM2iJqLbK8b/preview" data-orientation="vertical">
+          <div class="clip-thumb">
+            <span class="play-icon" aria-hidden="true">▶</span>
+            <span class="clip-duration">00:41</span>
+          </div>
+          <div class="clip-body">
+            <span class="clip-tag">Talking Head</span>
+            <h3>Perfume Review Edit</h3>
+            <p>In the following video, the color correction and the pacing were done in Premiere Pro. The motion graphics, camera movement and captions were done in After Effects.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TOOLKIT ============ -->
+  <section id="toolkit" class="section section-toolkit">
+    <div class="container">
+      <p class="section-label"><span class="tag tag-mint">00 / 03</span> Toolkit</p>
+      <h2 class="display section-title">What's In My Kit</h2>
+
+      <div class="toolkit-grid">
+        <div class="tool-card">
+          <span class="tool-step">Step 01 — Assembly</span>
+          <h3>Premiere Pro</h3>
+          <p>Where the story takes shape; cutting, pacing, and structuring the edit from raw footage to a finished flow.</p>
+        </div>
+        <div class="tool-card">
+          <span class="tool-step">Step 02 — Motion</span>
+          <h3>After Effects</h3>
+          <p>Motion graphics, captions, and visual effects that add personality without getting in the story's way.</p>
+        </div>
+        <div class="tool-card">
+          <span class="tool-step">Step 03 — Finishing</span>
+          <h3>DaVinci Resolve</h3>
+          <p>Color grading and final polish; giving every project a consistent, cinematic look.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <footer id="contact" class="section section-contact">
+    <div class="container">
+      <p class="section-label"><span class="tag tag-violet">00 / 04</span> Let's Talk</p>
+      <h2 class="display section-title">Let's Render Something Great</h2>
+      <p class="section-intro" style="color: var(--paper); opacity: 0.75;">Got a project that needs the right cut? Send me a message — I'd love to hear about it.</p>
+
+      <div class="contact-row">
+        <a href="mailto:visualsbyfasih@gmail.com" class="btn btn-primary">✉ visualsbyfasih@gmail.com</a>
+        <!-- Update the Instagram link below if your handle differs from @visualsbyfasih -->
+        <a href="https://instagram.com/visualsbyfasih" target="_blank" rel="noopener" class="btn btn-ghost">@visualsbyfasih ↗</a>
+      </div>
+
+      <p class="copyright">© 2026 Fasih — Visual Artist. Built frame by frame.</p>
+    </div>
+  </footer>
+
+  <!-- ============ VIDEO POPUP PLAYER ============ -->
+  <div class="video-modal" id="video-modal" aria-hidden="true">
+    <div class="video-modal-backdrop" data-close></div>
+    <div class="video-modal-content" role="dialog" aria-modal="true" aria-label="Video player">
+      <button class="video-modal-close" data-close aria-label="Close video">✕</button>
+      <div class="video-modal-frame" id="video-modal-frame">
+        <iframe id="video-modal-iframe" src="" title="Project video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        <div class="video-modal-instagram" id="video-modal-instagram"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Timeline scrubber: playhead + timecode follow scroll position =====
+    var playhead = document.getElementById('playhead');
+    var timecode = document.getElementById('timecode');
+    var heroTimecode = document.getElementById('hero-timecode');
+    var track = document.getElementById('track');
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function pad(n) {
+      return n.toString().padStart(2, '0');
+    }
+
+    function updateTimeline() {
+      var scrollTop = window.scrollY;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var percent = docHeight > 0 ? Math.min(Math.max(scrollTop / docHeight, 0), 1) : 0;
+      var trackWidth = track.offsetWidth;
+
+      playhead.style.left = (percent * (trackWidth - 3)) + 'px';
+
+      // Fake a 4-minute, 24fps "video duration" for the page
+      var totalFrames = Math.floor(percent * 4 * 60 * 24);
+      var mm = Math.floor(totalFrames / (60 * 24));
+      var ss = Math.floor((totalFrames % (60 * 24)) / 24);
+      var ff = totalFrames % 24;
+
+      var formatted = '00:' + pad(mm) + ':' + pad(ss) + ':' + pad(ff);
+      timecode.textContent = formatted;
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (!ticking) {
+        requestAnimationFrame(function () {
+          updateTimeline();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    window.addEventListener('resize', updateTimeline);
+    updateTimeline();
+
+    // ===== Hero "recording" timer =====
+    if (!reduceMotion) {
+      var seconds = 0;
+      setInterval(function () {
+        seconds++;
+        var mm = Math.floor(seconds / 60);
+        var ss = seconds % 60;
+        heroTimecode.textContent = '00:' + pad(mm) + ':' + pad(ss) + ':00';
+      }, 1000);
+    }
+
+    // ===== Work filter =====
+    var filters = document.querySelectorAll('.filter');
+    var cards = document.querySelectorAll('.clip-card');
+
+    filters.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        filters.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+
+        var f = btn.getAttribute('data-filter');
+        cards.forEach(function (card) {
+          var show = (f === 'all' || card.getAttribute('data-category') === f);
+          card.style.display = show ? '' : 'none';
+        });
+      });
+    });
+
+    // ===== Video popup player =====
+    var modal = document.getElementById('video-modal');
+    var modalFrame = document.getElementById('video-modal-frame');
+    var modalIframe = document.getElementById('video-modal-iframe');
+    var modalInstagram = document.getElementById('video-modal-instagram');
+    var lastFocused = null;
+
+    function loadInstagramEmbed(url) {
+      modalInstagram.innerHTML =
+        '<blockquote class="instagram-media" data-instgrm-permalink="' + url +
+        '" data-instgrm-version="14" style="margin:0; width:100%;"></blockquote>';
+
+      if (window.instgrm && window.instgrm.Embeds) {
+        window.instgrm.Embeds.process();
+      } else {
+        var script = document.createElement('script');
+        script.src = 'https://www.instagram.com/embed.js';
+        script.async = true;
+        script.onload = function () {
+          if (window.instgrm && window.instgrm.Embeds) {
+            window.instgrm.Embeds.process();
+          }
+        };
+        document.body.appendChild(script);
+      }
+    }
+
+    function openVideoModal(videoUrl, orientation, embedType) {
+      if (!videoUrl) return;
+      embedType = embedType || 'iframe';
+      modalFrame.classList.remove('vertical', 'instagram');
+
+      if (embedType === 'instagram') {
+        modalIframe.src = '';
+        modalFrame.classList.add('instagram');
+        loadInstagramEmbed(videoUrl);
+      } else {
+        modalInstagram.innerHTML = '';
+        modalIframe.src = videoUrl;
+        if (orientation === 'vertical') modalFrame.classList.add('vertical');
+      }
+
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      lastFocused = document.activeElement;
+      modal.querySelector('.video-modal-close').focus();
+    }
+
+    function closeVideoModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      modalIframe.src = ''; // stop iframe playback
+      modalInstagram.innerHTML = ''; // clear instagram embed
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    }
+
+    modal.querySelectorAll('[data-close]').forEach(function (el) {
+      el.addEventListener('click', closeVideoModal);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) {
+        closeVideoModal();
+      }
+    });
+
+    cards.forEach(function (card) {
+      var videoUrl = card.getAttribute('data-video');
+      var orientation = card.getAttribute('data-orientation') || 'horizontal';
+      var embedType = card.getAttribute('data-embed') || 'iframe';
+
+      if (!videoUrl) {
+        card.classList.add('no-video');
+        return;
+      }
+
+      var titleEl = card.querySelector('h3');
+      var title = titleEl ? titleEl.textContent : 'project';
+
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', 'Play video: ' + title);
+
+      card.addEventListener('click', function () {
+        openVideoModal(videoUrl, orientation, embedType);
+      });
+
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openVideoModal(videoUrl, orientation, embedType);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
